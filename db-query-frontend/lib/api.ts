@@ -1,4 +1,6 @@
-const BASE_URL = 'https://know-your-db.onrender.com';
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL!;
+
 
 function getConnectionId() {
   return localStorage.getItem('connectionId');
