@@ -100,11 +100,15 @@ export default function ConnectPage() {
     setLoading(true);
     try {
       const payload = buildPayload();
-      const res = await fetch('http://localhost:3000/connections/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/connections/connect`,
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  }
+);
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Connection failed');
       localStorage.setItem('connectionId', data.connectionId);
