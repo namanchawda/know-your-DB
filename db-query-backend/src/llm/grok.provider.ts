@@ -1,6 +1,6 @@
 // src/llm/groq.provider.ts
 
-import fetch from 'node-fetch';
+// import fetch from 'node-fetch';
 import {
   LLMProvider,
   GenerateSQLInput,
