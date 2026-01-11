@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://know-your-db.onrender.com';
 
 function getConnectionId() {
   return localStorage.getItem('connectionId');
