@@ -72,22 +72,28 @@ export async function runNLQuery(
 
 export async function connectDatabase(payload: {
   dbType: string;
-  host: string;
-  port: number;
-  database: string;
-  username: string;
-  password: string;
-  ssl: boolean;
+  host?: string;
+  port?: number;
+  database?: string;
+  username?: string;
+  password?: string;
+  ssl?: boolean;
+  uri?: string;
 }) {
-  const res = await fetch(`${BASE_URL}/connect`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  const res = await fetch(
+    `${BASE_URL}/connections/connect`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    },
+  );
 
   if (!res.ok) {
-    throw new Error('Connection failed');
+    const text = await res.text();
+    throw new Error(text || 'Connection failed');
   }
 
   return res.json(); // { connectionId }
 }
+
