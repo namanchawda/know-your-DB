@@ -80,22 +80,24 @@ export class ConnectionManagerService {
           if (!config.database) {
             throw new BadRequestException('Database name is required');
           }
-
+        
+          // 🚨 Supabase-safe connection string
+          const connectionString = `postgresql://${config.username}:${encodeURIComponent(
+            config.password!,
+          )}@${config.host}:${config.port ?? 5432}/${config.database}?sslmode=require`;
+        
           dataSource = new DataSource({
             type: 'postgres',
-            host: config.host,
-            port: config.port ?? 5432,
-            username: config.username,
-            password: config.password,
-            database: config.database,
-            ssl: config.ssl
-              ? { rejectUnauthorized: false }
-              : false,
+            url: connectionString,
+            ssl: {
+              rejectUnauthorized: false,
+            },
             extra: {
               connectionTimeoutMillis: 10_000,
             },
           });
           break;
+
 
         /* ---------- MySQL ---------- */
         case 'MySQL':
