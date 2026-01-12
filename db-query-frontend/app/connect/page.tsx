@@ -88,34 +88,16 @@ export default function ConnectPage() {
 
   function buildPayload() {
     switch (provider) {
-      case 'supabase': {
-  const projectRef = extractSupabaseProjectRef(form.host);
-
-  if (!projectRef) {
-    throw new Error(
-      'Use host like: db.<project-ref>.supabase.co'
-    );
-  }
-
-  return {
-    dbType: 'PostgreSQL',
-
-    // ✅ ALWAYS pooled host
-    host: 'aws-1-ap-south-1.pooler.supabase.com',
-
-    // ✅ REQUIRED pooled port
-    port: 6543,
-
-    // ✅ REQUIRED username format
-    username: `postgres.${projectRef}`,
-
-    // ✅ ALWAYS postgres
-    database: 'postgres',
-
-    password: form.password,
-    ssl: true,
-  };
-}
+      case 'supabase':
+        return {
+          dbType: 'PostgreSQL',
+          host: form.host,
+          port: Number(form.port),
+          database: form.database,
+          username: form.username,
+          password: form.password,
+          ssl: true,
+        };
       case 'postgres':
         return { dbType: 'PostgreSQL', host: form.host, port: Number(form.port || 5432), database: form.database, username: form.username, password: form.password, ssl: form.ssl };
       case 'mysql':
