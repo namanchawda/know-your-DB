@@ -92,22 +92,24 @@ export default function ConnectPage() {
   const projectRef = extractSupabaseProjectRef(form.host);
 
   if (!projectRef) {
-    throw new Error('Invalid Supabase host URL');
+    throw new Error(
+      'Use host like: db.<project-ref>.supabase.co'
+    );
   }
 
   return {
     dbType: 'PostgreSQL',
 
-    // ✅ Supabase pooled host
-    host: form.host,
+    // ✅ ALWAYS pooled host
+    host: 'aws-1-ap-south-1.pooler.supabase.com',
 
-    // ✅ REQUIRED by Supabase
+    // ✅ REQUIRED pooled port
     port: 6543,
 
     // ✅ REQUIRED username format
     username: `postgres.${projectRef}`,
 
-    // ✅ Always postgres
+    // ✅ ALWAYS postgres
     database: 'postgres',
 
     password: form.password,
