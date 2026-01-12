@@ -33,32 +33,26 @@ export class ConnectionManagerService {
     port?: number;
     username?: string;
     password?: string;
-    database?: string;
+    database?: string;     // SQL + Mongo
     ssl?: boolean;
-    serviceName?: string;
-    uri?: string; // MongoDB only
+    serviceName?: string;  // Oracle
+    uri?: string;          // MongoDB
   }) {
     try {
-      /* ======================================================
-         MONGODB (CONNECT ONLY – NO NL QUERIES)
-         ====================================================== */
+      /* ==================== MONGODB ==================== */
       if (config.dbType === 'MongoDB') {
         if (!config.uri) {
-          throw new BadRequestException(
-            'MongoDB URI is required',
-          );
+          throw new BadRequestException('MongoDB URI is required');
         }
-
         if (!config.database) {
-          throw new BadRequestException(
-            'MongoDB database name is required',
-          );
+          throw new BadRequestException('MongoDB database name is required');
         }
 
-        const client = new MongoClient(config.uri);
-        await client.connect();
+        const client = new MongoClient(config.uri, {
+          connectTimeoutMS: 10_000,
+        });
 
-        // IMPORTANT: use explicit database name only
+        await client.connect();
         const db = client.db(config.database);
 
         const connectionId = randomUUID();
@@ -71,17 +65,10 @@ export class ConnectionManagerService {
         return connectionId;
       }
 
-      /* ======================================================
-         SQL DATABASES (PRIMARY SUPPORTED PATH)
-         ====================================================== */
-      if (
-        !config.host ||
-        !config.username ||
-        !config.password ||
-        !config.database
-      ) {
+      /* ==================== SQL VALIDATION ==================== */
+      if (!config.host || !config.username || !config.password) {
         throw new BadRequestException(
-          'Missing required database connection fields',
+          'host, username and password are required',
         );
       }
 
@@ -90,6 +77,10 @@ export class ConnectionManagerService {
       switch (config.dbType) {
         /* ---------- PostgreSQL / Supabase ---------- */
         case 'PostgreSQL':
+          if (!config.database) {
+            throw new BadRequestException('Database name is required');
+          }
+
           dataSource = new DataSource({
             type: 'postgres',
             host: config.host,
@@ -100,11 +91,18 @@ export class ConnectionManagerService {
             ssl: config.ssl
               ? { rejectUnauthorized: false }
               : false,
+            extra: {
+              connectionTimeoutMillis: 10_000,
+            },
           });
           break;
 
         /* ---------- MySQL ---------- */
         case 'MySQL':
+          if (!config.database) {
+            throw new BadRequestException('Database name is required');
+          }
+
           dataSource = new DataSource({
             type: 'mysql',
             host: config.host,
@@ -112,18 +110,27 @@ export class ConnectionManagerService {
             username: config.username,
             password: config.password,
             database: config.database,
+            extra: {
+              connectTimeout: 10_000,
+            },
           });
           break;
 
         /* ---------- Oracle ---------- */
         case 'Oracle':
+          if (!config.serviceName) {
+            throw new BadRequestException(
+              'Oracle serviceName is required',
+            );
+          }
+
           dataSource = new DataSource({
             type: 'oracle',
             host: config.host,
             port: config.port ?? 1521,
             username: config.username,
             password: config.password,
-            sid: config.serviceName,
+            serviceName: config.serviceName,
           });
           break;
 
@@ -143,12 +150,10 @@ export class ConnectionManagerService {
 
       return connectionId;
     } catch (err: any) {
-      console.error(
-        'DB connection error:',
-        err?.message || err,
-      );
+      console.error('DB connection error:', err);
+
       throw new BadRequestException(
-        'Database connection failed',
+        err?.message || 'Database connection failed',
       );
     }
   }
@@ -164,7 +169,7 @@ export class ConnectionManagerService {
     return conn;
   }
 
-  /* -------------------- CLEANUP (OPTIONAL) -------------------- */
+  /* -------------------- CLEANUP -------------------- */
   async closeConnection(connectionId: string) {
     const conn = this.connections.get(connectionId);
     if (!conn) return;
