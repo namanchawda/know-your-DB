@@ -79,9 +79,9 @@ export default function ConnectPage() {
   const selectedProvider = providers.find(p => p.id === provider);
 
   function extractSupabaseProjectRef(host: string) {
-    // aws-1-ap-south-1.pooler.supabase.com
-    // OR db.eihvxxuttlscggxdprcu.supabase.co
-    const match = host.match(/([a-z0-9]{20,})/);
+    // Accept ONLY:
+    // db.<project-ref>.supabase.co
+    const match = host.trim().match(/^db\.([a-z0-9]+)\.supabase\.co$/);
     return match ? match[1] : null;
   }
 
