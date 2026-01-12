@@ -226,10 +226,36 @@ export default function ConnectPage() {
                         <div className="grid grid-cols-2 gap-x-5 gap-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                              
                              {/* SUPABASE SPECIFIC - Only Host & Password */}
-                             
+                             {provider === 'supabase' && (
+                                <>
+                                    <div className="col-span-2">
+                                        <label className="input-label">Host URL</label>
+                                        <input 
+                                            placeholder="db.ref.supabase.co" 
+                                            className="input-field" 
+                                            onChange={(e) => updateField('host', e.target.value)} 
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="input-label">Database Password</label>
+                                        <input 
+                                            type="password" 
+                                            placeholder="••••••••" 
+                                            className="input-field" 
+                                            onChange={(e) => updateField('password', e.target.value)} 
+                                        />
+                                    </div>
+                                    <div className="col-span-2 mt-2">
+                                        <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                            Standard configuration applied automatically (Port 5432, User postgres)
+                                        </div>
+                                    </div>
+                                </>
+                             )}
 
                              {/* OTHER PROVIDERS */}
-                             {provider !== 'mongodb' && (
+                             {provider !== 'supabase' && (
                                 <>
                                     {/* HOST & PORT */}
                                     {provider !== 'mongodb' && (
