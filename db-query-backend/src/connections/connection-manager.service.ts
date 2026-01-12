@@ -81,10 +81,11 @@ export class ConnectionManagerService {
             throw new BadRequestException('Database name is required');
           }
         
-          // 🚨 Supabase-safe connection string
-          const connectionString = `postgresql://${config.username}:${encodeURIComponent(
-            config.password!,
-          )}@${config.host}:${config.port ?? 5432}/${config.database}?sslmode=require`;
+          const connectionString = `postgresql://${encodeURIComponent(
+            config.username!,
+          )}:${encodeURIComponent(config.password!)}@${config.host}:${
+            config.port ?? 5432
+          }/${config.database}`;
         
           dataSource = new DataSource({
             type: 'postgres',
@@ -93,6 +94,9 @@ export class ConnectionManagerService {
               rejectUnauthorized: false,
             },
             extra: {
+              ssl: {
+                rejectUnauthorized: false,
+              },
               connectionTimeoutMillis: 10_000,
             },
           });
