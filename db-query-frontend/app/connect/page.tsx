@@ -78,10 +78,42 @@ export default function ConnectPage() {
 
   const selectedProvider = providers.find(p => p.id === provider);
 
+  function extractSupabaseProjectRef(host: string) {
+    // aws-1-ap-south-1.pooler.supabase.com
+    // OR db.eihvxxuttlscggxdprcu.supabase.co
+    const match = host.match(/([a-z0-9]{20,})/);
+    return match ? match[1] : null;
+  }
+
+
   function buildPayload() {
     switch (provider) {
-      case 'supabase':
-        return { dbType: 'PostgreSQL', host: form.host, port: 5432, database: 'postgres', username: 'postgres', password: form.password, ssl: true };
+      case 'supabase': {
+  const projectRef = extractSupabaseProjectRef(form.host);
+
+  if (!projectRef) {
+    throw new Error('Invalid Supabase host URL');
+  }
+
+  return {
+    dbType: 'PostgreSQL',
+
+    // ✅ Supabase pooled host
+    host: form.host,
+
+    // ✅ REQUIRED by Supabase
+    port: 6543,
+
+    // ✅ REQUIRED username format
+    username: `postgres.${projectRef}`,
+
+    // ✅ Always postgres
+    database: 'postgres',
+
+    password: form.password,
+    ssl: true,
+  };
+}
       case 'postgres':
         return { dbType: 'PostgreSQL', host: form.host, port: Number(form.port || 5432), database: form.database, username: form.username, password: form.password, ssl: form.ssl };
       case 'mysql':
