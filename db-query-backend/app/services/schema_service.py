@@ -62,7 +62,7 @@ class SchemaService:
 
         with conn.engine.connect() as c:
             return [
-                {"name": row[0], "type": row[1]}
+                {"column_name": row[0], "data_type": row[1]}
                 for row in c.execute(query, {"table": table})
             ]
 
@@ -76,7 +76,7 @@ class SchemaService:
         result = []
         for table in tables:
             cols = self.get_columns(connection_id, table)
-            result.append(TableSchema(name=table, columns=[c["name"] for c in cols]))
+            result.append(TableSchema(name=table, columns=[c["column_name"] for c in cols]))
         return result
 
 

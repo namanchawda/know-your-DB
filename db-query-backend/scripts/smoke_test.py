@@ -2,7 +2,7 @@
 """
 End-to-end smoke test for the FastAPI port. Hits all 6 endpoints against a
 real Postgres database and prints PASS/FAIL for each step, so you can sanity
-check the port before retiring the NestJS backend.
+check the FastAPI backend against a real PostgreSQL database.
 
 Usage:
     pip install httpx

@@ -7,6 +7,7 @@ load balancer, this map needs to move to something shared like Redis,
 since a user's connection would only "exist" on whichever pod created it).
 """
 import uuid
+import logging
 from dataclasses import dataclass
 from typing import Literal, Optional
 from urllib.parse import quote_plus
@@ -20,6 +21,7 @@ from app.config import get_settings
 from app.models.dto import CreateConnectionDto
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -45,6 +47,7 @@ class ConnectionManagerService:
         self._connections: dict[str, ManagedConnection] = {}
 
     def create_connection(self, dto: CreateConnectionDto) -> str:
+        logger.info("Creating %s connection to host=%s", dto.db_type, dto.host)
         connection_id = str(uuid.uuid4())
 
         if dto.db_type == "postgres":

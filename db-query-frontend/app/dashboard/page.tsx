@@ -248,7 +248,7 @@ export default function DashboardPage() {
           <div className="space-y-1">
             {tables.map((table) => (
               <div
-                key={table}
+                key={`table-${table}`}
                 onClick={() => loadColumns(table)}
                 className={`px-3 py-2 rounded-md text-sm cursor-pointer transition-colors truncate ${
                   selectedTable === table ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-50'

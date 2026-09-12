@@ -128,7 +128,7 @@ export default function ConnectPage() {
       const payload = buildPayload();
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/connections/connect`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/connections/connect`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -244,6 +244,7 @@ export default function ConnectPage() {
                                     <div className="md:col-span-2">
                                         <label className="input-label">Host</label>
                                         <input 
+                                            value={form.host}
                                             placeholder={provider === 'supabase' ? 'db.project-ref.supabase.co' : 'localhost'} 
                                             className="input-field" 
                                             onChange={(e) => updateField('host', e.target.value)} 

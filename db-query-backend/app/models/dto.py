@@ -1,5 +1,5 @@
 from typing import Literal, Optional
-from pydantic import BaseModel, Field, field_validator
+from pydantic import AliasChoices, BaseModel, Field, field_validator
 
 DbType = Literal["postgres", "mysql", "oracle", "mongodb"]
 LLMMode = Literal["local", "cloud", "auto"]
@@ -27,7 +27,11 @@ class CreateConnectionDto(BaseModel):
     service_name: Optional[str] = Field(default=None, alias="serviceName")
 
     # mongodb
-    mongo_uri: Optional[str] = Field(default=None, alias="mongoUri")
+    mongo_uri: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("mongoUri", "uri"),
+        serialization_alias="mongoUri",
+    )
 
     class Config:
         populate_by_name = True
@@ -35,7 +39,17 @@ class CreateConnectionDto(BaseModel):
     @field_validator("db_type", mode="before")
     @classmethod
     def normalize_db_type(cls, value: str) -> str:
-        return value.lower() if isinstance(value, str) else value
+        if not isinstance(value, str):
+            return value
+
+        db_type_map = {
+            "postgresql": "postgres",
+            "postgres": "postgres",
+            "mysql": "mysql",
+            "oracle": "oracle",
+            "mongodb": "mongodb",
+        }
+        return db_type_map.get(value.lower(), value.lower())
 
 
 class ConnectResponse(BaseModel):

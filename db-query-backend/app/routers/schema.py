@@ -1,8 +1,11 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 
 from app.services.schema_service import schema_service
 
 router = APIRouter(prefix="/schema", tags=["schema"])
+logger = logging.getLogger(__name__)
 
 
 @router.get("/tables")
@@ -12,6 +15,7 @@ def get_tables(connectionId: str):
     except KeyError:
         raise HTTPException(status_code=400, detail="Connection not found")
     except Exception as e:
+        logger.exception("Schema table lookup failed")
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -22,4 +26,5 @@ def get_columns(connectionId: str, table: str):
     except KeyError:
         raise HTTPException(status_code=400, detail="Connection not found")
     except Exception as e:
+        logger.exception("Schema column lookup failed")
         raise HTTPException(status_code=400, detail=str(e))
