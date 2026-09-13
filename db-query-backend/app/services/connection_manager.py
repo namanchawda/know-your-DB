@@ -10,7 +10,7 @@ import uuid
 import logging
 from dataclasses import dataclass
 from typing import Literal, Optional
-from urllib.parse import quote_plus
+from urllib.parse import parse_qs, quote_plus, unquote, urlparse
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
@@ -47,6 +47,21 @@ class ConnectionManagerService:
         self._connections: dict[str, ManagedConnection] = {}
 
     def create_connection(self, dto: CreateConnectionDto) -> str:
+        if dto.connection_string:
+            parsed = urlparse(dto.connection_string)
+            query = parse_qs(parsed.query)
+            dto.db_type = "postgres"
+            dto.host = parsed.hostname
+            dto.port = parsed.port or 5432
+            dto.database = parsed.path.lstrip("/")
+            dto.username = unquote(parsed.username or "")
+            dto.password = unquote(parsed.password or "")
+            dto.ssl = query.get("sslmode", [""])[0].lower() in {
+                "require",
+                "verify-ca",
+                "verify-full",
+            }
+
         logger.info("Creating %s connection to host=%s", dto.db_type, dto.host)
         connection_id = str(uuid.uuid4())
 

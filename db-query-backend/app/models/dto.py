@@ -14,6 +14,9 @@ class CreateConnectionDto(BaseModel):
     request bodies against the Pydantic model automatically).
     """
     db_type: DbType = Field(alias="dbType")
+    connection_string: Optional[str] = Field(
+        default=None, alias="connectionString"
+    )
 
     # SQL (postgres / mysql / oracle)
     host: Optional[str] = None
