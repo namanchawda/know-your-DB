@@ -102,7 +102,7 @@ export default function ConnectPage() {
       {isModalOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
         <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center"><h3 className="font-bold text-slate-800">Select Provider</h3><button onClick={() => setIsModalOpen(false)} className="text-slate-400 text-xl">×</button></div>
-          <div className="p-2"><button onClick={() => { setProvider(true); setIsModalOpen(false); }} className="w-full px-3 py-3 hover:bg-slate-50 rounded-xl flex items-center gap-3 text-left"><div className="p-2 bg-white rounded-lg shadow-sm border border-slate-100">{postgres.icon}</div><div><div className="text-sm font-bold text-slate-700">PostgreSQL</div><div className="text-[10px] text-slate-500">Standard</div></div></button></div>
+          <div className="p-2"><button onClick={() => { setProvider(true); setIsModalOpen(false); }} className="w-full px-3 py-3 hover:bg-slate-50 rounded-xl flex items-center gap-3 text-left"><div className="p-2 bg-white rounded-lg shadow-sm border border-slate-100">{postgres.icon}</div><div><div className="text-sm font-bold text-slate-700">Neon DB or PostgreSQL</div><div className="text-[10px] text-slate-500">Standard</div></div></button></div>
         </div>
       </div>}
 
